@@ -1,0 +1,68 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Vehicle {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  make         String?
+  model        String?
+  year         Int?
+  customer     Customer?     @relation(fields: [customerId], references: [id])
+  customerId   String?
+  appointments Appointment[]
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String?
+  email       String?
+  phoneNumber String?
+  vehicles    Vehicle[]
+}
+
+model Appointment {
+  id         String                 @id @default(cuid())
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  date       DateTime?
+  status     EnumAppointmentStatus?
+  vehicle    Vehicle?               @relation(fields: [vehicleId], references: [id])
+  vehicleId  String?
+  service    Service?               @relation(fields: [serviceId], references: [id])
+  serviceId  String?
+  mechanic   Mechanic?              @relation(fields: [mechanicId], references: [id])
+  mechanicId String?
+}
+
+model Service {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  name         String?
+  description  String?
+  price        Float?
+  appointments Appointment[]
+}
+
+model Mechanic {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  phoneNumber  String?
+  name         String?
+  email        String?
+  appointments Appointment[]
+}
+
+enum EnumAppointmentStatus {
+  Option1
+}
